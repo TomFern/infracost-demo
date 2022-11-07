@@ -1,0 +1,14 @@
+version: v1.0
+name: Initial Pipeline
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu2004
+blocks:
+  - name: "Cloud costs \U0001F4B0"
+    task:
+      jobs:
+        - name: Estimate
+          commands:
+            - checkout
+            - 'curl -O -L https://infracost.io/downloads/latest/infracost-linux-amd64.tar.gz'
