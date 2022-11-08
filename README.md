@@ -7,6 +7,7 @@ This demo uses [Infracost](https://infracost.io) to estimate cloud costs based o
 1. Fork the repository.
 2. Add it to [Semaphore CI](https://semaphoreci.com)
 3. Use the existing pipeline configuration
+4. Change a Terraform file
 
 The following actions are demoed:
 - Commits where Terraform files are changed get a comment.
