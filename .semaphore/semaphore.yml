@@ -13,3 +13,8 @@ blocks:
             - checkout
             - 'curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh'
             - ./check-budget.sh
+      secrets:
+        - name: infracost
+      env_vars:
+        - name: MAX_MONTHLY_COST
+          value: '700'
