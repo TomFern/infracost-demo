@@ -19,7 +19,8 @@ blocks:
       env_vars:
         - name: MAX_MONTHLY_COST
           value: '700'
-    dependencies: []
+    dependencies:
+      - "Infrastructure costs \U0001F4B0"
   - name: "Cost estimate in PR \U0001F4B0"
     task:
       secrets:
@@ -31,5 +32,20 @@ blocks:
             - 'curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh'
             - ./pull-request.sh
     run:
-      when: pull_request =~ '.*' and change_in('/main.tf')
+
+      when: pull_request =~ '.*' and change_in('**/*.tf')
     dependencies: []
+  - name: "Infrastructure costs \U0001F4B0"
+    dependencies: []
+    task:
+      jobs:
+        - name: Comment commit
+          commands:
+            - checkout
+            - 'curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh'
+            - infracost breakdown --path . --format json --out-file /tmp/infracost.json
+            - infracost comment github --path=/tmp/infracost.json --repo=$SEMAPHORE_GIT_REPO_SLUG --commit=$SEMAPHORE_GIT_SHA --github-token=$GITHUB_API_KEY --behavior=update
+      secrets:
+        - name: infracost
+    run:
+      when: change_in('**/*.tf')
