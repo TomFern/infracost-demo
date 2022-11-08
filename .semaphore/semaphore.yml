@@ -43,10 +43,6 @@ blocks:
             - checkout
             - 'curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh'
             - infracost breakdown --path . --format json --out-file /tmp/infracost.json
-            - infracost comment github --path=/tmp/infracost-base.json \
-            - '                         --repo=$SEMAPHORE_GIT_REPO_SLUG \'
-            - '                         --commit=$SEMAPHORE_GIT_SHA \'
-            - '                         --github-token=$GITHUB_API_KEY \'
-            - '                         --behavior=update'
+            - infracost comment github --path=/tmp/infracost-base.json --repo=$SEMAPHORE_GIT_REPO_SLUG --commit=$SEMAPHORE_GIT_SHA --github-token=$GITHUB_API_KEY --behavior=update
       secrets:
         - name: infracost
