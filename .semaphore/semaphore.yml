@@ -14,7 +14,7 @@ blocks:
             - infracost breakdown --path . --format json --out-file /tmp/infracost.json
             - 'monthly_cost=$(jq .projects[0].breakdown.totalMonthlyCost /tmp/infracost.json | sed ''s/"//g'')'
             - 'echo "Estimated cloud cost: ${monthly_cost}/${BUDGET_LIMIT_USD}"'
-            - '[[ $(echo "$monthly_cost > $MAX_MONTHLY_COST" | bc -l) -eq 0 ]] && exit 1'
+            - '[ $(echo "$monthly_cost > $MAX_MONTHLY_COST" | bc -l) ] && exit 1'
       secrets:
         - name: infracost
       env_vars:
@@ -40,7 +40,7 @@ blocks:
           - checkout
           - 'curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh'
     run:
-      when: pull_request =~ '.*' and change_in('**/*.tf')
+      when: pull_request =~ '.*' and (change_in('/*.tf') or change_in('**/*.tf'))
     dependencies: []
   - name: "Infracost comment \U0001F4B0"
     dependencies: []
@@ -57,7 +57,7 @@ blocks:
           - checkout
           - 'curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh'
     run:
-      when: change_in('**/*.tf')
+      when: change_in('/*.tf') or change_in('**/*.tf')
   - name: "Build \U0001F477\U0001F3FB‍♀️"
     dependencies: []
     task:
