@@ -33,8 +33,11 @@ blocks:
       jobs:
         - name: Comment PRs
           commands:
-            - infracost breakdown --path . --format json --out-file /tmp/infracost.json
-            - infracost comment github --path=/tmp/infracost.json --repo=$SEMAPHORE_GIT_REPO_SLUG --pull-request=$SEMAPHORE_GIT_PR_NUMBER --github-token=$GITHUB_API_KEY --behavior=update
+            - git checkout master
+            - infracost breakdown --path . --format json --out-file /tmp/infracost-master.json
+            - git checkout FETCH_HEAD
+            - infracost diff --path . --format json --compare-to /tmp/infracost-master.json --out-file /tmp/infracost-pull-request.json
+            - infracost comment github --path="/tmp/infracost-*.json" --repo=$SEMAPHORE_GIT_REPO_SLUG --pull-request=$SEMAPHORE_GIT_PR_NUMBER --github-token=$GITHUB_API_KEY --behavior=update
       prologue:
         commands:
           - checkout
