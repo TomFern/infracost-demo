@@ -5,10 +5,12 @@
 if [[ "$SEMAPHORE_GIT_PROVIDER" == "github" ]]; then
 
 # either --pull-request=$SEMAPHORE_GIT_PR_SHA or --commit=$SEMAPHORE_GIT_SHA
-infracost comment github --path=infracost.json \
+mkdir -p tmp
+infracost breakdown --path . --format json --out-file tmp/infracost-base.json
+infracost comment github --path=tmp/infracost-base.json \
                          --repo=$SEMAPHORE_GIT_REPO_SLUG \
-                         --pull-request=$SEMAPHORE_GIT_PR_SHA \
-                         --github-token=$GITHUB_TOKEN \
+                         --pull-request=$SEMAPHORE_GIT_PR_NUMBER \
+                         --github-token=$GITHUB_API_KEY \
                          --behavior=update
 fi
 
