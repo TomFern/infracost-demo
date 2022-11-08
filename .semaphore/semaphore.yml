@@ -5,47 +5,74 @@ agent:
     type: e1-standard-2
     os_image: ubuntu2004
 blocks:
-  - name: "Cloud costs \U0001F4B0"
+  - name: "Enforce cloud budget \U0001F4B0"
     task:
       jobs:
         - name: Check budget
           commands:
             - sudo apt install bc
-            - checkout
-            - 'curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh'
-            - ./check-budget.sh
+            - infracost breakdown --path . --format json --out-file /tmp/infracost.json
+            - 'monthly_cost=$(jq .projects[0].breakdown.totalMonthlyCost tmp/infracost.json | sed ''s/"//g'')'
+            - 'echo "Estimated cloud cost: ${monthly_cost}/${BUDGET_LIMIT_USD}"'
+            - '[[ $(echo "$monthly_cost > $MAX_MONTHLY_COST" | bc -l) ]] && exit 1'
       secrets:
         - name: infracost
       env_vars:
-        - name: MAX_MONTHLY_COST
-          value: '700'
+        - name: BUDGET_LIMIT_USD
+          value: '100'
+      prologue:
+        commands:
+          - checkout
+          - 'curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh'
     dependencies:
-      - "Infrastructure costs \U0001F4B0"
-  - name: "Cost estimate in PR \U0001F4B0"
+      - "Tests \U0001F52C"
+  - name: "Infracost PR\U0001F4B0"
     task:
       secrets:
         - name: infracost
       jobs:
-        - name: 'Post comment '
+        - name: Comment PRs
           commands:
-            - checkout
-            - 'curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh'
-            - ./pull-request.sh
+            - infracost breakdown --path . --format json --out-file /tmp/infracost.json
+            - infracost comment github --path=tmp/infracost.json --repo=$SEMAPHORE_GIT_REPO_SLUG --pull-request=$SEMAPHORE_GIT_PR_NUMBER --github-token=$GITHUB_API_KEY --behavior=update
+      prologue:
+        commands:
+          - checkout
+          - 'curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh'
     run:
-
       when: pull_request =~ '.*' and change_in('**/*.tf')
     dependencies: []
-  - name: "Infrastructure costs \U0001F4B0"
+  - name: "Infracost comment \U0001F4B0"
     dependencies: []
     task:
       jobs:
         - name: Comment commit
           commands:
-            - checkout
-            - 'curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh'
             - infracost breakdown --path . --format json --out-file /tmp/infracost.json
             - infracost comment github --path=/tmp/infracost.json --repo=$SEMAPHORE_GIT_REPO_SLUG --commit=$SEMAPHORE_GIT_SHA --github-token=$GITHUB_API_KEY --behavior=update
       secrets:
         - name: infracost
+      prologue:
+        commands:
+          - checkout
+          - 'curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh'
     run:
       when: change_in('**/*.tf')
+  - name: "Build \U0001F477\U0001F3FB‍♀️"
+    dependencies: []
+    task:
+      jobs:
+        - name: Make build
+          commands:
+            - sleep 5
+  - name: "Tests \U0001F52C"
+    dependencies:
+      - "Build \U0001F477\U0001F3FB‍♀️"
+    task:
+      jobs:
+        - name: Unit tests
+          commands:
+            - sleep 2
+        - name: Integration tests
+          commands:
+            - sleep 3
