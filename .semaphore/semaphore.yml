@@ -32,6 +32,7 @@ blocks:
             - 'curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh'
             - ./pull-request.sh
     run:
+
       when: pull_request =~ '.*' and change_in('**/*.tf')
     dependencies: []
   - name: "Infrastructure costs \U0001F4B0"
