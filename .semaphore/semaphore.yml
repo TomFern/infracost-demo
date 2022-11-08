@@ -14,7 +14,7 @@ blocks:
             - infracost breakdown --path . --format json --out-file /tmp/infracost.json
             - 'monthly_cost=$(jq .projects[0].breakdown.totalMonthlyCost /tmp/infracost.json | sed ''s/"//g'')'
             - 'echo "Estimated cloud cost: ${monthly_cost}/${BUDGET_LIMIT}"'
-            - '[ $(echo "$monthly_cost > $BUDGET_LIMIT" | bc -l) ] && exit 1'
+            - 'if [ $(echo "$monthly_cost > $BUDGET_LIMIT" | bc -l) ]; then echo "LIMIT EXCEEEDED!"; exit 1; fi'
       secrets:
         - name: infracost
       env_vars:
