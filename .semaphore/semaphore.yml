@@ -34,7 +34,7 @@ blocks:
         - name: Comment PRs
           commands:
             - infracost breakdown --path . --format json --out-file /tmp/infracost.json
-            - infracost comment github --path=tmp/infracost.json --repo=$SEMAPHORE_GIT_REPO_SLUG --pull-request=$SEMAPHORE_GIT_PR_NUMBER --github-token=$GITHUB_API_KEY --behavior=update
+            - infracost comment github --path=/tmp/infracost.json --repo=$SEMAPHORE_GIT_REPO_SLUG --pull-request=$SEMAPHORE_GIT_PR_NUMBER --github-token=$GITHUB_API_KEY --behavior=update
       prologue:
         commands:
           - checkout
