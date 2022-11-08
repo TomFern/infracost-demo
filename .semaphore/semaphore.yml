@@ -11,5 +11,5 @@ blocks:
         - name: Check budget
           commands:
             - checkout
-            - 'curl -O -L https://infracost.io/downloads/latest/infracost-linux-amd64.tar.gz'
+            - 'curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh
             - ./check-budget.sh
