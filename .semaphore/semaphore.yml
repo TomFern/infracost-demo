@@ -5,10 +5,10 @@ agent:
     type: e1-standard-2
     os_image: ubuntu2004
 blocks:
-  - name: "Enforce cloud budget \U0001F4B0"
+  - name: "Enforce monthly budget \U0001F4B0"
     task:
       jobs:
-        - name: Check budget
+        - name: Enforce limit
           commands:
             - sudo apt update && sudo apt install bc
             - infracost breakdown --path . --format json --out-file /tmp/infracost.json
@@ -19,7 +19,7 @@ blocks:
         - name: infracost
       env_vars:
         - name: BUDGET_LIMIT
-          value: '100'
+          value: '1000'
       prologue:
         commands:
           - checkout
