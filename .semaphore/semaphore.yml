@@ -19,6 +19,7 @@ blocks:
       env_vars:
         - name: MAX_MONTHLY_COST
           value: '700'
+    dependencies: []
   - name: "Cost estimate in PR \U0001F4B0"
     task:
       secrets:
@@ -29,3 +30,6 @@ blocks:
             - checkout
             - 'curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh'
             - ./pull-request.sh
+    run:
+      when: branch = 'master' and pull_request =~ '.*' and change_in('**/*.tf')
+    dependencies: []
