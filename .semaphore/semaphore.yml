@@ -31,5 +31,5 @@ blocks:
             - 'curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh'
             - ./pull-request.sh
     run:
-      when: branch = 'master' and pull_request =~ '.*' and change_in('**/*.tf')
+      when: pull_request =~ '.*' and change_in('main.tf')
     dependencies: []
