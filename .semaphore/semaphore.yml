@@ -10,11 +10,11 @@ blocks:
       jobs:
         - name: Check budget
           commands:
-            - sudo apt install bc
+            - sudo apt update && sudo apt install bc
             - infracost breakdown --path . --format json --out-file /tmp/infracost.json
-            - 'monthly_cost=$(jq .projects[0].breakdown.totalMonthlyCost tmp/infracost.json | sed ''s/"//g'')'
+            - 'monthly_cost=$(jq .projects[0].breakdown.totalMonthlyCost /tmp/infracost.json | sed ''s/"//g'')'
             - 'echo "Estimated cloud cost: ${monthly_cost}/${BUDGET_LIMIT_USD}"'
-            - '[[ $(echo "$monthly_cost > $MAX_MONTHLY_COST" | bc -l) ]] && exit 1'
+            - '[[ $(echo "$monthly_cost > $MAX_MONTHLY_COST" | bc -l) -eq 0 ]] && exit 1'
       secrets:
         - name: infracost
       env_vars:
