@@ -1,6 +1,6 @@
 version: 0.1
 
 projects:
-  - path: prod
+  - path: .
     usage_file: infracost-usage.yml
 
