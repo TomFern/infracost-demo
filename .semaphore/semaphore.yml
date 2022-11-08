@@ -19,3 +19,13 @@ blocks:
       env_vars:
         - name: MAX_MONTHLY_COST
           value: '700'
+  - name: "Cost estimate in PR \U0001F4B0"
+    task:
+      secrets:
+        - name: infracost
+      jobs:
+        - name: 'Post comment '
+          commands:
+            - checkout
+            - 'curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh'
+            - ./pull-request.sh
