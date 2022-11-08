@@ -10,6 +10,7 @@ blocks:
       jobs:
         - name: Check budget
           commands:
+            - sudo apt install bc
             - checkout
             - 'curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh'
             - ./check-budget.sh
