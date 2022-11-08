@@ -40,7 +40,7 @@ blocks:
           - checkout
           - 'curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh'
     run:
-      when: pull_request =~ '.*' and (change_in('/*.tf') or change_in('**/*.tf'))
+      when: pull_request =~ '.*' and change_in('/**/*.tf')
     dependencies: []
   - name: "Infracost comment \U0001F4B0"
     dependencies: []
@@ -57,7 +57,7 @@ blocks:
           - checkout
           - 'curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh'
     run:
-      when: change_in('/*.tf') or change_in('**/*.tf')
+      when: change_in('/**/*.tf')
   - name: "Build \U0001F477\U0001F3FB‍♀️"
     dependencies: []
     task:
