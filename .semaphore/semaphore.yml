@@ -45,22 +45,6 @@ blocks:
     run:
       when: pull_request =~ '.*' and change_in('/**/*.tf')
     dependencies: []
-  - name: "Infracost comment \U0001F4B0"
-    dependencies: []
-    task:
-      jobs:
-        - name: Comment commit
-          commands:
-            - infracost breakdown --path . --format json --out-file /tmp/infracost.json
-            - infracost comment github --path=/tmp/infracost.json --repo=$SEMAPHORE_GIT_REPO_SLUG --commit=$SEMAPHORE_GIT_SHA --github-token=$GITHUB_API_KEY --behavior=update
-      secrets:
-        - name: infracost
-      prologue:
-        commands:
-          - checkout
-          - 'curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh'
-    run:
-      when: change_in('/**/*.tf')
   - name: "Build \U0001F477\U0001F3FB‍♀️"
     dependencies: []
     task:
