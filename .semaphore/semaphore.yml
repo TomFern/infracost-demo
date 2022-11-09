@@ -43,7 +43,7 @@ blocks:
           - checkout
           - 'curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh'
     run:
-      when: pull_request =~ '.*' and change_in('/**/*.tf')
+      when: pull_request =~ '.*' and (change_in('/**/*.tf') or change_in('/**/*.tfvars'))
     dependencies: []
   - name: "Build \U0001F477\U0001F3FB‍♀️"
     dependencies: []
@@ -63,3 +63,19 @@ blocks:
         - name: Integration tests
           commands:
             - sleep 3
+  - name: "Estimate cost diff \U0001F4B0"
+    dependencies: []
+    run:
+      when: (change_in('/**/*.tf') or change_in('/**/*.tfvars'))
+    task:
+      secrets:
+        - name: infracost
+      prologue:
+        commands:
+          - checkout
+          - 'curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh'
+      jobs:
+        - name: Comment commits
+          commands:
+            - infracost diff --config-file infracost.yml --format json --compare-to infra/infracost-base.json --out-file /tmp/infracost-diff-commit.json
+            - infracost comment github --path=/tmp/infracost-diff-commit.json --repo=$SEMAPHORE_GIT_REPO_SLUG --commit=$SEMAPHORE_GIT_SHA --github-token=$GITHUB_API_KEY --behavior=update
