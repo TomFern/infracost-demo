@@ -14,6 +14,9 @@ The following actions are demoed:
 - Pull requests that change Terraform files are commented with the cost difference.
 - The pipeline stops with error if estimated cost exceeds budget, preventing deployments.
 
+- **Updating cost analysis**: `make costs`
+- **Calculating diffs in costs**: `make diff`
+
 ## Prerequisites
 
 1. Signup for [Infracost](https://infracost.io) with a free account.
