@@ -16,7 +16,7 @@ blocks:
             - infracost breakdown --config-file infracost.yml --format json --out-file /tmp/infracost-master.json
             - git checkout FETCH_HEAD
             - infracost diff --config-file infracost.yml --format json --compare-to /tmp/infracost-master.json --out-file /tmp/infracost-diff-master.json
-            - infracost comment github --path=/tmp/infracost-diff-master.json --repo=$SEMAPHORE_GIT_REPO_SLUG --pull-request=$SEMAPHORE_GIT_PR_NUMBER --github-token=$GITHUB_API_KEY --behavior=update
+            - infracost comment github --path=/tmp/infracost-diff-master.json --repo=$SEMAPHORE_GIT_REPO_SLUG --policy-path infra/infracost-policy.rego --pull-request=$SEMAPHORE_GIT_PR_NUMBER --github-token=$GITHUB_API_KEY --behavior=update
       prologue:
         commands:
           - checkout
