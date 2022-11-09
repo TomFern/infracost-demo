@@ -36,7 +36,7 @@ deny[out] {
 	# msg defines the output that will be shown in PR comments under the Policy Checks/Failures section.
 	msg := sprintf(
 		"Total monthly cost must be less than $%.2f (actual diff is $%.2f)",
-		[maxDiff, to_number(input.totalMonthlyCost)],
+		[maxMonthlyCost, to_number(input.totalMonthlyCost)],
 	)
 
 	# out defines the output for this policy. This output must be formatted with a `msg` and `failed` property.
