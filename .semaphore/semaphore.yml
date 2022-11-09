@@ -5,32 +5,12 @@ agent:
     type: e1-standard-2
     os_image: ubuntu2004
 blocks:
-  - name: Delete me2
-    task:
-      jobs:
-        - name: Enforce limit
-          commands:
-            - sudo apt update && sudo apt install bc
-            - infracost breakdown --config-file infracost.yml --format json --out-file /tmp/infracost.json
-            - 'monthly_cost=$(jq .projects[0].breakdown.totalMonthlyCost /tmp/infracost.json | sed ''s/"//g'')'
-            - 'echo "Estimated cloud cost: ${monthly_cost}/${BUDGET_LIMIT}"'
-            - 'if [ $(echo "$monthly_cost > $BUDGET_LIMIT" | bc -l) -eq 1 ]; then echo "LIMIT EXCEEEDED!"; exit 1; fi'
-      secrets:
-        - name: infracost
-      env_vars:
-        - name: BUDGET_LIMIT
-          value: '1000'
-      prologue:
-        commands:
-          - checkout
-          - 'curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh'
-    dependencies: []
-  - name: "Infracost PR\U0001F4B0"
+  - name: "Analyze PRs\U0001F4B0"
     task:
       secrets:
         - name: infracost
       jobs:
-        - name: Comment PRs
+        - name: Show cost diffs
           commands:
             - git checkout master
             - infracost breakdown --config-file infracost.yml --format json --out-file /tmp/infracost-master.json
@@ -65,7 +45,7 @@ blocks:
   - name: "Budget control \U0001F46E‍♀️"
     dependencies: []
     run:
-      when: (change_in('/**/*.tf') or change_in('/**/*.tfvars'))
+      when: change_in('/**/*.tf') or change_in('/**/*.tfvars')
     task:
       secrets:
         - name: infracost
@@ -74,21 +54,7 @@ blocks:
           - checkout
           - 'curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh'
       jobs:
-        - name: "Estimate cost diff \U0001F4B0"
+        - name: "Policy checks\U0001F4B0"
           commands:
             - infracost diff --config-file infracost.yml --format json --compare-to infra/infracost-base.json --out-file /tmp/infracost-diff-commit.json
             - infracost comment github --path=/tmp/infracost-diff-commit.json --repo=$SEMAPHORE_GIT_REPO_SLUG --commit=$SEMAPHORE_GIT_SHA --policy-path infra/infracost-policy.rego --github-token=$GITHUB_API_KEY --behavior=update
-  - name: Delete me
-    dependencies: []
-    task:
-      secrets:
-        - name: infracost
-      prologue:
-        commands:
-          - checkout
-          - 'curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh'
-      jobs:
-        - name: Enforce policy
-          commands:
-            - infracost breakdown --config-file infracost.yml --format json --out-file /tmp/infracost.json
-            - infracost comment github --path=/tmp/infracost.json --repo=$SEMAPHORE_GIT_REPO_SLUG --commit=$SEMAPHORE_GIT_SHA --github-token=$GITHUB_API_KEY --policy-path infra/infracost-policy.rego --behavior=update
