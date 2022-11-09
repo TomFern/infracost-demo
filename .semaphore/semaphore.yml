@@ -43,7 +43,8 @@ blocks:
           commands:
             - sleep 3
   - name: "Budget control \U0001F46E‍♀️"
-    dependencies: []
+    dependencies:
+      - "Analyze PRs\U0001F4B0"
     run:
       when: change_in('/**/*.tf') or change_in('/**/*.tfvars')
     task:
