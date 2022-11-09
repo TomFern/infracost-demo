@@ -79,3 +79,17 @@ blocks:
           commands:
             - infracost diff --config-file infracost.yml --format json --compare-to infra/infracost-base.json --out-file /tmp/infracost-diff-commit.json
             - infracost comment github --path=/tmp/infracost-diff-commit.json --repo=$SEMAPHORE_GIT_REPO_SLUG --commit=$SEMAPHORE_GIT_SHA --github-token=$GITHUB_API_KEY --behavior=update
+  - name: "Budget control \U0001F46E‍♀️"
+    dependencies: []
+    task:
+      secrets:
+        - name: infracost
+      prologue:
+        commands:
+          - checkout
+          - 'curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh'
+      jobs:
+        - name: Enforce policy
+          commands:
+            - infracost breakdown --config-file infracost.yml --format json --out-file /tmp/infracost.json
+            - infracost comment github --path=/tmp/infracost.json --repo=$SEMAPHORE_GIT_REPO_SLUG --commit=$SEMAPHORE_GIT_SHA --github-token=$GITHUB_API_KEY --policy-path infra/infracost-policy.rego --behavior=update
