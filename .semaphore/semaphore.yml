@@ -5,7 +5,7 @@ agent:
     type: e1-standard-2
     os_image: ubuntu2004
 blocks:
-  - name: "Enforce monthly budget \U0001F4B0"
+  - name: Delete me2
     task:
       jobs:
         - name: Enforce limit
@@ -24,8 +24,7 @@ blocks:
         commands:
           - checkout
           - 'curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh'
-    dependencies:
-      - "Tests \U0001F52C"
+    dependencies: []
   - name: "Infracost PR\U0001F4B0"
     task:
       secrets:
@@ -63,7 +62,7 @@ blocks:
         - name: Integration tests
           commands:
             - sleep 3
-  - name: "Estimate cost diff \U0001F4B0"
+  - name: "Budget control \U0001F46E‍♀️"
     dependencies: []
     run:
       when: (change_in('/**/*.tf') or change_in('/**/*.tfvars'))
@@ -75,11 +74,11 @@ blocks:
           - checkout
           - 'curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh'
       jobs:
-        - name: Comment commits
+        - name: "Estimate cost diff \U0001F4B0"
           commands:
             - infracost diff --config-file infracost.yml --format json --compare-to infra/infracost-base.json --out-file /tmp/infracost-diff-commit.json
-            - infracost comment github --path=/tmp/infracost-diff-commit.json --repo=$SEMAPHORE_GIT_REPO_SLUG --commit=$SEMAPHORE_GIT_SHA --github-token=$GITHUB_API_KEY --behavior=update
-  - name: "Budget control \U0001F46E‍♀️"
+            - infracost comment github --path=/tmp/infracost-diff-commit.json --repo=$SEMAPHORE_GIT_REPO_SLUG --commit=$SEMAPHORE_GIT_SHA --policy-path infra/infracost-policy.rego --github-token=$GITHUB_API_KEY --behavior=update
+  - name: Delete me
     dependencies: []
     task:
       secrets:
