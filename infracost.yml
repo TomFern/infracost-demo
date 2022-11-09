@@ -1,6 +1,7 @@
 version: 0.1
 
 projects:
-  - path: .
-    usage_file: infracost-usage.yml
+  - path: infra
+    name: production environment
+    usage_file: infra/infracost-usage.yml
 

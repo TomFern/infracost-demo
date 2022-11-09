@@ -11,7 +11,7 @@ blocks:
         - name: Enforce limit
           commands:
             - sudo apt update && sudo apt install bc
-            - infracost breakdown --path . --format json --out-file /tmp/infracost.json
+            - infracost breakdown --config-file infracost.yml --format json --out-file /tmp/infracost.json
             - 'monthly_cost=$(jq .projects[0].breakdown.totalMonthlyCost /tmp/infracost.json | sed ''s/"//g'')'
             - 'echo "Estimated cloud cost: ${monthly_cost}/${BUDGET_LIMIT}"'
             - 'if [ $(echo "$monthly_cost > $BUDGET_LIMIT" | bc -l) -eq 1 ]; then echo "LIMIT EXCEEEDED!"; exit 1; fi'
@@ -34,9 +34,9 @@ blocks:
         - name: Comment PRs
           commands:
             - git checkout master
-            - infracost breakdown --path . --format json --out-file /tmp/infracost-master.json
+            - infracost breakdown --config-file infracost.yml --format json --out-file /tmp/infracost-master.json
             - git checkout FETCH_HEAD
-            - infracost diff --path . --format json --compare-to /tmp/infracost-master.json --out-file /tmp/infracost-diff-master.json
+            - infracost diff --config-file infracost.yml --format json --compare-to /tmp/infracost-master.json --out-file /tmp/infracost-diff-master.json
             - infracost comment github --path=/tmp/infracost-diff-master.json --repo=$SEMAPHORE_GIT_REPO_SLUG --pull-request=$SEMAPHORE_GIT_PR_NUMBER --github-token=$GITHUB_API_KEY --behavior=update
       prologue:
         commands:
