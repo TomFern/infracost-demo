@@ -1,0 +1,9 @@
+version: 0.1
+
+projects:
+  - path: ec2
+    name: dev
+    skip_autodetect: true
+  - path: prod
+    name: prod
+    skip_autodetect: true
