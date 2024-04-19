@@ -1,0 +1,21 @@
+version: v1.0
+name: Initial Pipeline
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu2004
+blocks:
+  - name: Infracost
+    task:
+      jobs:
+        - name: Diff and comment
+          commands:
+            - checkout
+            - cd lambda
+            - infracost diff --path . --usage-file usage.yml --compare-to baseline.json --format json --out-file /tmp/infracost-diff-commit.json
+            - infracost comment github --path=/tmp/infracost-diff-commit.json --repo=$SEMAPHORE_GIT_REPO_SLUG --commit=$SEMAPHORE_GIT_SHA --github-token=$GITHUB_API_KEY --behavior=update
+      secrets:
+        - name: infracost-tomfern
+      prologue:
+        commands:
+          - 'curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh'
